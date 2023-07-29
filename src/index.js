@@ -1,5 +1,5 @@
-const http = require('http');
-const fs = require('fs');
+const http = require('node:http');
+const fs = require('node:fs/promises');
 
 const hostname = 'localhost';
 const port = 8080;
@@ -10,23 +10,25 @@ const pages = {
     'contact-me': '/contact-me',
 };
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
     try {
         const pageReq = req.url;
         const pageExist = Object.values(pages).includes(pageReq);
         if (pageExist) {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
             const file = Object.keys(pages).find(
                 (page) => pages[page] === pageReq,
             );
-            const fileRes = fs.readFileSync(`src/${file}.html`, 'utf8');
-            return res.end(fileRes);
+            const filePath = `src/${file}.html`;
+            const fileRes = await fs.readFile(filePath);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(fileRes);
+        } else {
+            const notFoundPage = await fs.readFile('src/404.html');
+            res.statusCode = 404;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(notFoundPage);
         }
-        res.statusCode = 404;
-        res.setHeader('Content-Type', 'text/html');
-        const notFoundPage = fs.readFileSync('src/404.html', 'utf8');
-        res.end(notFoundPage);
     } catch (err) {
         console.error(err);
     }
