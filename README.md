@@ -6,6 +6,6 @@ The main purpose of this small project is to practice **Node.js** hosting a serv
 
 - The **Node.js** server is hosted in _index.js_
 - `localhost:8080` should take users to _index.html_
-- `localhost:8080/about_` should take users to _about.html_
-- `localhost:8080/contact-me_` should take users to _contact-me.html_
-- _404.html_ should display any time the user tries to go to a page not listed above.
+- `localhost:8080/about` should take users to _about.html_
+- `localhost:8080/contact-me` should take users to _contact-me.html_
+- _404.html_ should display any time the user tries to go to a page not listed above
