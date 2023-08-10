@@ -1,39 +1,25 @@
-const http = require('node:http');
-const fs = require('node:fs/promises');
+import express from 'express';
 
-const hostname = 'localhost';
+const app = express();
+const router = express.Router();
 const port = 8080;
 
-const pages = {
-    index: '/',
-    about: '/about',
-    'contact-me': '/contact-me',
-};
-
-const server = http.createServer(async (req, res) => {
-    try {
-        const pageReq = req.url;
-        const pageExist = Object.values(pages).includes(pageReq);
-        if (pageExist) {
-            const file = Object.keys(pages).find(
-                (page) => pages[page] === pageReq,
-            );
-            const filePath = `src/${file}.html`;
-            const fileRes = await fs.readFile(filePath);
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            res.end(fileRes);
-        } else {
-            const notFoundPage = await fs.readFile('src/404.html');
-            res.statusCode = 404;
-            res.setHeader('Content-Type', 'text/html');
-            res.end(notFoundPage);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+router.get('/', (req, res) => {
+    res.sendFile('index.html', { root: 'src/' });
 });
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}`);
+router.get('/about', (req, res) => {
+    res.sendFile('about.html', { root: 'src/' });
+});
+
+router.get('/contact-me', (req, res) => {
+    res.sendFile('contact-me.html', { root: 'src/' });
+});
+
+app.use(router, (req, res, next) => {
+    res.status(404).sendFile('404.html', { root: 'src/' });
+});
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}!`);
 });
